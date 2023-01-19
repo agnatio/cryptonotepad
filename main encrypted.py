@@ -2,22 +2,20 @@ import tkinter as tk
 from tkinter import filedialog
 import getpass
 import encrypt
+import authorisation
 
 
 #Variable to store the current file path
 current_file = ""
-entered_pass = ""
+
 
 def check_auth():
-    global entered_pass
     global aes
     entered_pass = entry.get()
     aes = encrypt.AES256(bytes(entered_pass, 'utf-8'))
-    key = 'gAAAAABjyajjzbJ0xnBc_SBueDZMH6jQN5Jg_GdzxIVOAfUoJDHXR48vl99d7mpHwHfWRGh0gwCXYPwK4jbp8XvksECztxujuQ=='
     try:
-        
-        if aes.decrypt(key.encode()).decode() == 'textToMatch':
-            print("Success")
+        if aes.decrypt(authorisation.key.encode()).decode() == 'textToMatch':
+            print("Successful authentication")
             auth_window.destroy()
     except:
         print("Incorrect password, closing program.")
@@ -31,7 +29,12 @@ def save_text_as():
     if current_file:
         with open(current_file, "w") as file:
             data = text_area.get("1.0", tk.END)
-            data = aes.encrypt(data.encode()).decode()
+            try:
+                print("Saving with encryption")
+                data = aes.encrypt(data.encode()).decode()
+            except:
+                print("Saving without encryption")
+                pass
             print(data)
             file.write(data)
     set_title()
@@ -41,7 +44,12 @@ def save_text():
     if current_file:
         with open(current_file, "w") as file:
             data = text_area.get("1.0", tk.END)
-            data = aes.encrypt(data.encode()).decode()
+            try:
+                print("Saving with encryption")
+                data = aes.encrypt(data.encode()).decode()
+            except:
+                print("Saving without encryption")
+                pass
             print(data)
             file.write(data)
     else:
@@ -53,8 +61,12 @@ def open_text():
     if file:
         current_file = file.name
         data = file.read()
-        data = aes.decrypt(data.encode()).decode()
-        print(data)
+        try:
+            data = aes.decrypt(data.encode()).decode()
+            print("Opening with decryption")
+        except:
+            print("Opening without decryption")
+            pass
         text_area.delete("1.0", tk.END)
         text_area.insert("1.0", data)
         file.close()
@@ -78,8 +90,7 @@ def exit_text():
 
 
 
-
-# create a small window for authorization and place it in center of screen
+# create a  window for authorization and place it in center of screen
 auth_window = tk.Tk()
 auth_window.title("Authorization")
 auth_window.geometry("300x100")
@@ -101,9 +112,10 @@ auth_window.mainloop()
 
 
 root = tk.Tk()
+root.geometry("+600+200")
 root.title("Simple Notepad")
 
-text_area = tk.Text(root, width=100, height=80)
+text_area = tk.Text(root, width=100, height=40)
 text_area.pack()
 # Create the menu
 menubar = tk.Menu(root)
