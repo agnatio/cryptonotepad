@@ -3,10 +3,12 @@ from tkinter import filedialog
 import getpass
 import encrypt
 import authorisation
+import os
 
 
 #Variable to store the current file path
 current_file = ""
+
 
 
 def check_auth():
@@ -25,7 +27,7 @@ def check_auth():
 
 def save_text_as():
     global current_file
-    current_file = filedialog.asksaveasfilename(defaultextension=".txt")
+    current_file = filedialog.asksaveasfilename(defaultextension=".txt", initialdir=os.path.join(os.getcwd(), 'data'))
     if current_file:
         with open(current_file, "w") as file:
             data = text_area.get("1.0", tk.END)
@@ -57,7 +59,7 @@ def save_text():
 
 def open_text():
     global current_file
-    file = filedialog.askopenfile(mode='r') 
+    file = filedialog.askopenfile(mode='r', initialdir=os.path.join(os.getcwd(), 'data')) 
     if file:
         current_file = file.name
         data = file.read()
@@ -89,47 +91,53 @@ def exit_text():
     root.destroy()
 
 
+if __name__ == "__main__":
 
-# create a  window for authorization and place it in center of screen
-auth_window = tk.Tk()
-auth_window.title("Authorization")
-auth_window.geometry("300x100")
-auth_window.resizable(False, False)
-auth_window.eval('tk::PlaceWindow %s center' % auth_window.winfo_pathname(auth_window.winfo_id()))
+    __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    file_path = os.path.join(__location__, '/data')
 
-label = tk.Label(auth_window, text="Please enter the password:")
-label.pack()
+    print(file_path)
 
-entry = tk.Entry(auth_window, show="*", width=20)
-entry.pack()
-entry.bind('<Return>', lambda event: check_auth())
+    # create a  window for authorization and place it in center of screen
+    auth_window = tk.Tk()
+    auth_window.title("Authorization")
+    auth_window.geometry("300x100")
+    auth_window.resizable(False, False)
+    auth_window.eval('tk::PlaceWindow %s center' % auth_window.winfo_pathname(auth_window.winfo_id()))
 
-button = tk.Button(auth_window, text="Submit", command=check_auth)
-button.pack()
+    label = tk.Label(auth_window, text="Please enter the password:")
+    label.pack()
 
-auth_window.mainloop()
+    entry = tk.Entry(auth_window, show="*", width=20)
+    entry.pack()
+    entry.bind('<Return>', lambda event: check_auth())
+
+    button = tk.Button(auth_window, text="Submit", command=check_auth)
+    button.pack()
+
+    auth_window.mainloop()
 
 
 
-root = tk.Tk()
-root.geometry("+600+200")
-root.title("Simple Notepad")
+    root = tk.Tk()
+    root.geometry("+600+200")
+    root.title("Simple Notepad")
 
-text_area = tk.Text(root, width=100, height=40)
-text_area.pack()
-# Create the menu
-menubar = tk.Menu(root)
-root.config(menu=menubar)
+    text_area = tk.Text(root, width=100, height=40)
+    text_area.pack()
+    # Create the menu
+    menubar = tk.Menu(root)
+    root.config(menu=menubar)
 
-file_menu = tk.Menu(menubar)
-menubar.add_cascade(label="File", menu=file_menu)
-file_menu.add_command(label="Open", command=open_text)
-file_menu.add_command(label="Save As", command=save_text_as)
-file_menu.add_command(label="Save", command=save_text)
-file_menu.add_separator()
-file_menu.add_command(label="Exit", command=exit_text)
+    file_menu = tk.Menu(menubar)
+    menubar.add_cascade(label="File", menu=file_menu)
+    file_menu.add_command(label="Open", command=open_text)
+    file_menu.add_command(label="Save As", command=save_text_as)
+    file_menu.add_command(label="Save", command=save_text)
+    file_menu.add_separator()
+    file_menu.add_command(label="Exit", command=exit_text)
 
-root.mainloop()
+    root.mainloop()
 
 
 
