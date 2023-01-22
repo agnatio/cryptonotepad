@@ -22,7 +22,7 @@ pip install filedialog
 ```
 
 ## Running the program
-Run the program by executing the script.
+Run the program by executing the script. `main encrypted.py`
 
 
 ## Features
